@@ -11,9 +11,7 @@ class _MessagesState extends State<Messages> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ,
-    );
+    return SizedBox();
   }
 
   // Widget contactListTile(){

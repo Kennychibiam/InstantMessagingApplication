@@ -40,6 +40,7 @@ class MyApp extends StatelessWidget {
                body: CustomScrollView(
                  slivers:[
                    SliverAppBar(
+                     elevation: 0.0,
                      expandedHeight: 200.0,
                      pinned: true,
                      flexibleSpace: Container(//adds gradient colors
@@ -47,7 +48,7 @@ class MyApp extends StatelessWidget {
                          gradient:LinearGradient(
                            begin:Alignment.centerLeft,
                            end:Alignment.centerRight,
-                           colors: [Color.fromARGB(255, 53, 149, 155),Colors.cyanAccent],
+                           colors: [Color.fromARGB(255, 255, 218, 185),Color.fromARGB(255, 255, 239, 213)],
                          ),
                        ),
 

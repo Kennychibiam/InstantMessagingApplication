@@ -32,7 +32,7 @@ class _BottomNavigationClassState extends State<BottomNavigationClass> {
       showUnselectedLabels: false,
       showSelectedLabels: false,
       unselectedItemColor: Colors.black38,
-      selectedItemColor: Colors.indigo,
+      selectedItemColor: Color.fromARGB(255, 255, 218, 170),
 
       items: [
         BottomNavigationBarItem(

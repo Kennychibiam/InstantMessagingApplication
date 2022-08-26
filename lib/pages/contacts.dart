@@ -25,7 +25,7 @@ class _ContactsState extends State<Contacts> {
                   shrinkWrap: true,
                   itemCount: snapshot.data?.length,
                   itemBuilder:(context,index){
-                    String ?contactName=snapshot.data?[index].givenName;
+                    String ?contactName=snapshot.data?[index].displayName;
                 return contactListTile(contactName);
 
               } ),

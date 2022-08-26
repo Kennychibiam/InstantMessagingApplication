@@ -9,6 +9,5 @@ class MessagesContactsProvider extends ChangeNotifier {
   set setCurrentNavigationIndex(int index) {
     currentSelectedIndex = index;
     notifyListeners();
-    print("notify");
   }
 }

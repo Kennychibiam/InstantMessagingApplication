@@ -50,16 +50,19 @@ class ContactDatabase {
     database =
     await _instance.openGetDatabase; //returns instance of itself if not null
 
-    List<Map<String, Object?>>? resultCheck = await database
-        ?.query(CONTACTS_TABLE, where: "DISPLAY_NAME=?", whereArgs: [contactsModel.displayName]);
+    List<Map<String, Object?>>? resultCheck;
+    database?.transaction((txn)async{
+      resultCheck=await txn.query(CONTACTS_TABLE, where: "DISPLAY_NAME=?", whereArgs: [contactsModel.displayName]);
 
-    if (resultCheck?.isNotEmpty ?? false) {
-      result = await updateContactsTable(
-          tableName: CONTACTS_TABLE, contactsModel: contactsModel);
-    } else {
-      result =
-      await database?.insert(CONTACTS_TABLE, contactsModel.convertDataToMap());
-    }
+      if (resultCheck?.isNotEmpty ?? false) {
+        result=await updateContactsTable(
+            tableName: CONTACTS_TABLE, contactsModel: contactsModel);
+      }
+      else{
+
+        result=await txn.insert(CONTACTS_TABLE, contactsModel.convertDataToMap());
+      }
+    });
     return result;
   }
 
@@ -67,8 +70,12 @@ class ContactDatabase {
   Future<List<ContactsModel>> retrieveFromContactsTable({required String tableName}) async {
     database =
     await _instance.openGetDatabase; //returns instance of itself if not null
+    List<Map<String, Object?>>? result;
 
-    List<Map<String, Object?>>? result = await database?.query(tableName);
+    await database?.transaction((txn)async{
+     result= await txn.query(tableName);
+    });
+
     return ContactsModel.toMap().fromJsonToContactsClass(result);
   }
 
@@ -77,28 +84,35 @@ class ContactDatabase {
     int? result;
     database = await _instance.openGetDatabase;
 
-    result = await database?.update(tableName, contactsModel.convertDataToMap(),
-        where: "DISPLAY_NAME=?", whereArgs: [contactsModel.displayName]);
-    //print(result??""+ "  update");
+
+    await database?.transaction((txn)async {
+      result=await txn.update(tableName, contactsModel.convertDataToMap(),
+      where: "DISPLAY_NAME=?", whereArgs: [contactsModel.displayName]);
+    });
     return result;
   }
 
   Future<int?> removeFromDatabase(String tableName, String? listTitle) async {
     int? result;
     database = await _instance.openGetDatabase;
-    result = await database
-        ?.delete(tableName, where: "DISPLAY_NAME=?", whereArgs: [listTitle]);
+     await database?.transaction((txn)async {
+       result =await txn.delete(tableName, where: "DISPLAY_NAME=?", whereArgs: [listTitle]);
+    });
+
     return result;
   }
 
 
-  Future<ContactsModel?> retrieveColorFromContactsTable({required String ? displayName}) async {
+  Future<ContactsModel?> retrieveContactFromContactsTable({required String ? displayName}) async {
     database =
     await _instance.openGetDatabase; //returns instance of itself if not null
+    List<Map<String, Object?>>? result;
+    await database?.transaction((txn)async{
 
-    List<Map<String, Object?>>? result = await database?.query(CONTACTS_TABLE,where: "DISPLAY_NAME=?",whereArgs: [displayName]);
+      result=await txn.query(CONTACTS_TABLE,where: "DISPLAY_NAME=?",whereArgs: [displayName]);
+    });
 
-    if(result!=null){
+    if(result!=null && result!.isNotEmpty){
       return ContactsModel.toMap().fromJsonToContactsClass(result).first;
     }
     return null;

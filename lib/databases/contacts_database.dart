@@ -33,7 +33,7 @@ class ContactDatabase {
         await database.execute(
           "CREATE TABLE CONTACTS_TABLE(ID INTEGER PRIMARY KEY AUTOINCREMENT,"
               " DISPLAY_NAME TEXT NOT NULL, "
-              "AVATAR_COLOR INTEGER NOT NULL, "
+              "AVATAR_COLOR INTEGER NOT NULL"
               
               ")",
         );
@@ -44,27 +44,27 @@ class ContactDatabase {
   }
 
   Future<int?> insertIntoContactsTable(
-      {required String tableName, required ContactsModel contactsModel}) async {
+      {required ContactsModel contactsModel}) async {
     int? result;
 
     database =
     await _instance.openGetDatabase; //returns instance of itself if not null
 
     List<Map<String, Object?>>? resultCheck = await database
-        ?.query(tableName, where: "DISPLAY_NAME=?", whereArgs: [contactsModel.displayName]);
+        ?.query(CONTACTS_TABLE, where: "DISPLAY_NAME=?", whereArgs: [contactsModel.displayName]);
 
     if (resultCheck?.isNotEmpty ?? false) {
       result = await updateContactsTable(
-          tableName: tableName, contactsModel: contactsModel);
+          tableName: CONTACTS_TABLE, contactsModel: contactsModel);
     } else {
       result =
-      await database?.insert(tableName, contactsModel.convertDataToMap());
+      await database?.insert(CONTACTS_TABLE, contactsModel.convertDataToMap());
     }
     return result;
   }
 
 
-  Future<List<ContactsModel>> retrieveTable({required String tableName}) async {
+  Future<List<ContactsModel>> retrieveFromContactsTable({required String tableName}) async {
     database =
     await _instance.openGetDatabase; //returns instance of itself if not null
 
@@ -92,5 +92,16 @@ class ContactDatabase {
   }
 
 
+  Future<ContactsModel?> retrieveColorFromContactsTable({required String ? displayName}) async {
+    database =
+    await _instance.openGetDatabase; //returns instance of itself if not null
+
+    List<Map<String, Object?>>? result = await database?.query(CONTACTS_TABLE,where: "DISPLAY_NAME=?",whereArgs: [displayName]);
+
+    if(result!=null){
+      return ContactsModel.toMap().fromJsonToContactsClass(result).first;
+    }
+    return null;
+  }
 
 }

@@ -6,6 +6,8 @@ import "package:flutter/material.dart";
 import 'package:contacts_service/contacts_service.dart';
 import 'package:instant_message_me/databases/contacts_database.dart';
 import 'package:instant_message_me/models/contacts_model.dart';
+import 'package:collection/collection.dart';
+import 'package:grouped_list/grouped_list.dart';
 
 class Contacts extends StatefulWidget {
   const Contacts({Key? key}) : super(key: key);
@@ -25,7 +27,8 @@ class _ContactsState extends State<Contacts> {
   // Future<List<Contact>> contacts = FlutterContacts.getContacts(sorted: true,withAccounts: true,withGroups: true,withProperties: true);
   Future<List<Contact>> contacts =
       ContactsService.getContacts(withThumbnails: false);
-  Map<Contact,int>contactsMap={};
+  List< Map<dynamic,dynamic>>groupedContactList=[];//contains the list of maps:key is the first display name value is the contact element
+
   @override
   void initState() {
 
@@ -36,15 +39,18 @@ class _ContactsState extends State<Contacts> {
         if(contactModel==null) {
           avatarColor= Random().nextInt(avatarColors.length);
           await insertToContactDatabase(contactElement.displayName, avatarColor);
-          contactsMap[contactElement]=avatarColor;
+          groupedContactList.add({"name":contactElement.displayName,"value":contactElement,"avatarcolor":avatarColor});
+
         }
         else{
-          contactsMap[contactElement]=contactModel.avatarColor!;
+          groupedContactList.add({"name":contactElement.displayName,"value":contactElement,"avatarcolor":contactModel.avatarColor});
+
 
 
         }
-        if(contactsMap.length==contactResult.length){
+         if(groupedContactList.length==contactResult.length){
           setState(() {
+
           });
         }
       });
@@ -58,14 +64,30 @@ class _ContactsState extends State<Contacts> {
   Widget build(BuildContext context) {
 
           return Scrollbar(
-            child: ListView.builder(
+            child:GroupedListView(
                 primary: false,
                 shrinkWrap: true,
-                itemCount: contactsMap.length,
-                itemBuilder: (context, index) {
-                  String? displayName = contactsMap.keys.elementAt(index).displayName;
-                  return contactListTile(displayName,contactsMap[contactsMap.keys.elementAt(index)]??0);
-                }),
+              //arranges elements in a group in asceneding order if item1 coms b4 item2
+              itemComparator: (dynamic item1, dynamic item2)=>item1["name"].compareTo(item2["name"]),
+
+              //value returned by groupBy is used to build the header using the groupSeparatorBuilder
+
+              groupSeparatorBuilder: (dynamic value)=>Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(value,style: TextStyle(fontSize:18.0,fontWeight: FontWeight.bold)),
+                ),
+                itemBuilder: (context, dynamic element) {
+
+                  //String? displayName = contactsMap.keys.elementAt(index).displayName;
+                  return contactListTile(element["name"],element["avatarcolor"]);
+                },
+
+              groupBy: (dynamic obj)=>obj["name"].toUpperCase().substring(0,1),
+
+              elements: groupedContactList,
+              order: GroupedListOrder.ASC,
+            ),
+
           );
         }
 

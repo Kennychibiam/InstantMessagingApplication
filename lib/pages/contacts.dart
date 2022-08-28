@@ -74,6 +74,8 @@ class _ContactsState extends State<Contacts> {
               child: GroupedListView(
                   primary: false,
                   shrinkWrap: true,
+                //key: const PageStorageKey<String>("contacts"),
+
                 //arranges elements in a group in asceneding order if item1 coms b4 item2
                 itemComparator: (dynamic item1, dynamic item2)=>item1["name"].compareTo(item2["name"]),
 

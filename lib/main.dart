@@ -52,6 +52,7 @@ class MyApp extends StatelessWidget {
             backgroundColor:Colors.transparent,
             body: CustomScrollView(
               shrinkWrap: true,
+
                 slivers: [
                   SliverAppBar(
                     elevation: 0.0,
@@ -92,7 +93,7 @@ class MyApp extends StatelessWidget {
                           ),
                     ),
                   ),
-                  SliverToBoxAdapter(
+                  SliverFillRemaining(
                     child: IndexedStack(
                       index: messageProviderInstance.currentSelectedIndex,
                       children: [

@@ -40,6 +40,7 @@ class _MessagesState extends State<Messages> {
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0),topRight: Radius.circular(20.0))
       ),
       child: ListView.builder(
+        //key: const PageStorageKey<String>("messages"),
         primary: false,
         shrinkWrap: true,
         itemCount: messagesContactList.length,

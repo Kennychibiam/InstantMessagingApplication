@@ -24,7 +24,6 @@ class SmsMessage extends StatefulWidget {
 class _SmsMessageState extends State<SmsMessage> {
   SmsQuery smsQuery = SmsQuery();
   List<dynamic> messagesList = [];
-  var groupedMessagesList;
   int count=0;
   @override
   void initState() {
@@ -105,7 +104,10 @@ class _SmsMessageState extends State<SmsMessage> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              canShowTime==true?(Text(DateFormat.Hm().format(time))):SizedBox(),
+              Visibility(
+                  visible: canShowTime,
+                  replacement:Text("          "),
+                  child: Text(DateFormat.Hm().format(time))),
               Expanded(
                 child: Align(
                   alignment: Alignment.centerLeft,
@@ -145,8 +147,10 @@ class _SmsMessageState extends State<SmsMessage> {
                   ),
                 ),
               ),
-              canShowTime==true?(Text(DateFormat.Hm().format(time))):SizedBox(),
-
+              Visibility(
+                  visible: canShowTime,
+                  replacement:Text("          "),
+                  child: Text(DateFormat.Hm().format(time))),
             ],
           ),
         );
@@ -175,16 +179,14 @@ class _SmsMessageState extends State<SmsMessage> {
         kinds: [SmsQueryKind.Sent, SmsQueryKind.Draft, SmsQueryKind.Inbox]);
 
     if (messagesFromContact.isNotEmpty) {
-      messagesFromContact.sort((dynamic a,dynamic b)=>a["date"].compareTo(b["date"]));
+      messagesFromContact.sort((dynamic a,dynamic b)=>a.dateSent.compareTo(b.dateSent));
       if (widget.avatarColor == null) {
         var contactModel = await ContactDatabase()
             .retrieveContactFromContactsTable(displayName: widget.contactName);
         widget.avatarColor = contactModel?.avatarColor;
       }
-      String lastDateTime="";
 
       for (var message in messagesFromContact) {
-        print(message.dateSent);
         bool canShowTime=true;
         if(messagesList.isNotEmpty && messagesList.last["date"]==message.dateSent){
           messagesList.last["canShowTime"]=false;

@@ -3,7 +3,6 @@ import 'package:instant_message_me/bottom_navigation.dart';
 import 'package:instant_message_me/controllers/route_generator.dart';
 import 'package:instant_message_me/providers/messages_contacts_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
@@ -37,51 +36,75 @@ class MyApp extends StatelessWidget {
           return true;
         },
         child: Consumer<MessagesContactsProvider>(
-          builder: (context, messageProviderInstance, child) => Scaffold(
-            body: CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  elevation: 0.0,
-                  expandedHeight: 200.0,
-                  pinned: true,
-                  flexibleSpace: Container(
-                    //adds gradient colors
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          Color.fromARGB(255, 255, 218, 185),
-                          Color.fromARGB(255, 255, 239, 213)
-                        ],
-                      ),
-                    ),
-
-                    child: Center(
-                      child: messageProviderInstance.currentSelectedIndex == 0
-                          ? Text(
-                              "Messages",
-                              style: TextStyle(color: Colors.black26,fontSize: 30.0),
-                            )
-                          : Text(
-                              "Contacts",
-                              style: TextStyle(color: Colors.black26,fontSize: 30.0),
-                            ),
-                    ),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: IndexedStack(
-                    index: messageProviderInstance.currentSelectedIndex,
-                    children: [
-                      ...messageProviderInstance.messageContactsWidgetList,
+          builder: (context, messageProviderInstance, child) =>
+              Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      Color.fromARGB(255, 255, 218, 185),
+                      Color.fromARGB(255, 255, 239, 213)
                     ],
                   ),
                 ),
-              ],
+                child: Scaffold(
+            backgroundColor:Colors.transparent,
+            body: CustomScrollView(
+              shrinkWrap: true,
+                slivers: [
+                  SliverAppBar(
+                    elevation: 0.0,
+                    expandedHeight: 200.0,
+                    pinned: true,
+                    flexibleSpace: Container(
+                      //adds gradient colors
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            Color.fromARGB(255, 255, 218, 185),
+                            Color.fromARGB(255, 255, 239, 213)
+                          ],
+                        ),
+                      ),
+
+                      child: messageProviderInstance.currentSelectedIndex == 0
+                          ? Center(
+                            child: Text(
+                                "Messages",
+                                style: TextStyle(color: Colors.black26,fontSize: 30.0),
+                              ),
+                          )
+                          : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                  "Contacts",
+                                  style: TextStyle(color: Colors.black26,fontSize: 30.0),
+                                ),
+                              Text(
+                                "${messageProviderInstance.numberOfContacts}",
+                                style: TextStyle(color: Colors.black26,fontSize: 18.0),
+                              ),
+                            ],
+                          ),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: IndexedStack(
+                      index: messageProviderInstance.currentSelectedIndex,
+                      children: [
+                        ...messageProviderInstance.messageContactsWidgetList,
+                      ],
+                    ),
+                  ),
+                ],
             ),
             bottomNavigationBar: BottomNavigationClass(),
           ),
+              ),
         ));
   }
 }

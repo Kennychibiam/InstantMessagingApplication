@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:instant_message_me/colors.dart';
+import 'package:instant_message_me/controllers/route_generator.dart';
 import 'package:instant_message_me/databases/contacts_database.dart';
 import 'package:instant_message_me/models/contacts_model.dart';
 import 'package:sms_advanced/contact.dart';
@@ -15,16 +17,10 @@ class Messages extends StatefulWidget {
 
 class _MessagesState extends State<Messages> {
   SmsQuery smsQuery = SmsQuery();
-  ContactQuery contactQuery = ContactQuery();
+  //ContactQuery contactQuery = ContactQuery();
   List<dynamic> messagesContactList =
       []; //contains message threads that have the addresses"names" from messages
 
-  List<MaterialColor> avatarColors = [
-    Colors.indigo,
-    Colors.blueGrey,
-    Colors.pink,
-    Colors.orange
-  ];
 
 
   @override
@@ -39,20 +35,24 @@ class _MessagesState extends State<Messages> {
           color:Colors.white,
           borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0),topRight: Radius.circular(20.0))
       ),
-      child: ListView.builder(
-        //key: const PageStorageKey<String>("messages"),
-        primary: false,
-        shrinkWrap: true,
-        itemCount: messagesContactList.length,
-          itemBuilder: (context,index){
-          String?displayName=messagesContactList[index]["name"];
-          int?avatarColor=messagesContactList[index]["avatarColor"];
-          int?unRead=messagesContactList[index]["unRead"];
-          String?lastMessage=messagesContactList[index]["lastMessage"];
-          DateTime?date=messagesContactList[index]["date"];
-            return messagesListTile(displayName, avatarColor, lastMessage, date,unRead);
-          }
+      child: Scrollbar(
+        interactive: true,
+        child: ListView.builder(
+          //key: const PageStorageKey<String>("messages"),
+          primary: false,
+          shrinkWrap: true,
+          itemCount: messagesContactList.length,
+            itemBuilder: (context,index){
+            String?displayName=messagesContactList[index]["name"];
+            int?avatarColor=messagesContactList[index]["avatarColor"];
+            int?unRead=messagesContactList[index]["unRead"];
+            String?lastMessage=messagesContactList[index]["lastMessage"];
+            DateTime?date=messagesContactList[index]["date"];
+              return Material(
+                  child: InkWell(child: messagesListTile(displayName, avatarColor, lastMessage, date,unRead)));
+            }
 
+        ),
       ),
     );
   }
@@ -60,6 +60,9 @@ class _MessagesState extends State<Messages> {
 
   Widget messagesListTile(String? displayName,int?avatarColor,String?lastMessage,DateTime? date, int? unRead) {
     return ListTile(
+        onTap: (){
+            Navigator.pushNamed(context, RouteGenerator.SMS_PAGE,arguments: {"contactName":displayName,"avatarColor":avatarColor});
+        },
       //key: ValueKey(displayName),
       leading: CircleAvatar(
         backgroundColor: avatarColors[avatarColor??0],

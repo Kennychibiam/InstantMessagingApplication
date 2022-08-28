@@ -43,7 +43,9 @@ class MyApp extends StatelessWidget {
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                     colors: [
-                      Color.fromARGB(255, 255, 218, 185),
+                      Color.fromARGB(255, 251, 196, 144),
+
+                      //Color.fromARGB(255, 255, 218, 185),
                       Color.fromARGB(255, 255, 239, 213)
                     ],
                   ),
@@ -65,7 +67,7 @@ class MyApp extends StatelessWidget {
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
                           colors: [
-                            Color.fromARGB(255, 255, 218, 185),
+                            Color.fromARGB(255, 251, 196, 144),
                             Color.fromARGB(255, 255, 239, 213)
                           ],
                         ),

@@ -4,6 +4,7 @@ import "package:flutter/material.dart";
 
 //import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:instant_message_me/colors.dart';
 import 'package:instant_message_me/databases/contacts_database.dart';
 import 'package:instant_message_me/models/contacts_model.dart';
 import 'package:collection/collection.dart';
@@ -19,12 +20,7 @@ class Contacts extends StatefulWidget {
 }
 
 class _ContactsState extends State<Contacts> {
-  List<MaterialColor> avatarColors = [
-    Colors.indigo,
-    Colors.blueGrey,
-    Colors.pink,
-    Colors.orange
-  ];
+
 
   Future<List<Contact>> contacts =
       ContactsService.getContacts(withThumbnails: false);
@@ -65,12 +61,14 @@ class _ContactsState extends State<Contacts> {
   @override
   Widget build(BuildContext context) {
 
-          return Scrollbar(
-            child:Container(
-              decoration:BoxDecoration(
-                color:Colors.white,
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0),topRight: Radius.circular(20.0))
-              ),
+          return Container(
+            decoration:BoxDecoration(
+              color:Colors.white,
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0),topRight: Radius.circular(20.0))
+            ),
+            child: Scrollbar(
+              interactive: true,
+
               child: GroupedListView(
                   primary: false,
                   shrinkWrap: true,
@@ -97,7 +95,6 @@ class _ContactsState extends State<Contacts> {
                 order: GroupedListOrder.ASC,
               ),
             ),
-
           );
         }
 

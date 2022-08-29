@@ -6,6 +6,6 @@ class MainActivity: FlutterActivity() {
     private val METHOD_CHANNEL_RECIEVE_INCOMING_DATA="com.nitelite.incomingdata";
     //private val METHOD_CHANNEL_RECIEVE_INCOMING_DATA="com.nitelite.incomingdata";
 
-
+    
 
 }

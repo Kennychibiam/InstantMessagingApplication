@@ -15,7 +15,7 @@ class RouteGenerator{
 
       case SMS_PAGE:
         var args=settings.arguments as Map;
-        return MaterialPageRoute(builder: (context)=>SmsMessage(contactName: args["contactName"], avatarColor: args["avatarColor"]));
+        return MaterialPageRoute(builder: (context)=>SmsMessagePage(address: args["address"],fullName: args["fullName"], avatarColor: args["avatarColor"],phoneNumber: args["phoneNumbers"],));
       default:return MaterialPageRoute(builder: (context)=>MyApp());
     }
 

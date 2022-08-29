@@ -8,3 +8,8 @@ List<MaterialColor> avatarColors = [
   Colors.pink,
   Colors.orange
 ];
+
+List<Color>simCardColors=[
+  Colors.green,
+  Colors.blue,
+];

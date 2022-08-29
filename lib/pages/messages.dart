@@ -5,6 +5,10 @@ import 'package:instant_message_me/colors.dart';
 import 'package:instant_message_me/controllers/route_generator.dart';
 import 'package:instant_message_me/databases/contacts_database.dart';
 import 'package:instant_message_me/models/contacts_model.dart';
+import 'package:instant_message_me/providers/contacts_provider.dart';
+import 'package:instant_message_me/providers/messages_provider.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:sms_advanced/contact.dart';
 import 'package:sms_advanced/sms_advanced.dart';
 
@@ -16,20 +20,23 @@ class Messages extends StatefulWidget {
 }
 
 class _MessagesState extends State<Messages> {
-  SmsQuery smsQuery = SmsQuery();
-  //ContactQuery contactQuery = ContactQuery();
-  List<dynamic> messagesContactList =
-      []; //contains message threads that have the addresses"names" from messages
 
+  late MessagesProvider messagesProvider;
+  late ContactsProvider contactsProvider;
+  late ScrollController groupListViewController=ScrollController();
 
 
   @override
   void initState() {
-    queryAndInitializeMessages();
+
+
+
   }
 
   @override
   Widget build(BuildContext context) {
+    messagesProvider=Provider.of<MessagesProvider>(context,listen:false);
+    contactsProvider=Provider.of<ContactsProvider>(context,listen:false);
     return Container(
       decoration:BoxDecoration(
           color:Colors.white,
@@ -41,15 +48,17 @@ class _MessagesState extends State<Messages> {
           //key: const PageStorageKey<String>("messages"),
           primary: false,
           shrinkWrap: true,
-          itemCount: messagesContactList.length,
+          physics: ScrollPhysics(),
+          itemCount: messagesProvider.messagesContactList.length,
             itemBuilder: (context,index){
-            String?displayName=messagesContactList[index]["name"];
-            int?avatarColor=messagesContactList[index]["avatarColor"];
-            int?unRead=messagesContactList[index]["unRead"];
-            String?lastMessage=messagesContactList[index]["lastMessage"];
-            DateTime?date=messagesContactList[index]["date"];
+            String?address=messagesProvider.messagesContactList[index]["address"];
+            String?fullName=messagesProvider.messagesContactList[index]["fullName"];
+            int?avatarColor=messagesProvider.messagesContactList[index]["avatarColor"];
+            int?unRead=messagesProvider.messagesContactList[index]["unRead"];
+            String?lastMessage=messagesProvider.messagesContactList[index]["lastMessage"];
+            DateTime?date=messagesProvider.messagesContactList[index]["date"];
               return Material(
-                  child: InkWell(child: messagesListTile(displayName, avatarColor, lastMessage, date,unRead)));
+                  child: InkWell(child: messagesListTile(address,fullName, avatarColor, lastMessage, date,unRead)));
             }
 
         ),
@@ -58,17 +67,18 @@ class _MessagesState extends State<Messages> {
   }
 
 
-  Widget messagesListTile(String? displayName,int?avatarColor,String?lastMessage,DateTime? date, int? unRead) {
+  Widget messagesListTile(String? address,String? fullName,int?avatarColor,String?lastMessage,DateTime? date, int? unRead) {
     return ListTile(
-        onTap: (){
-            Navigator.pushNamed(context, RouteGenerator.SMS_PAGE,arguments: {"contactName":displayName,"avatarColor":avatarColor});
+        onTap: ()async{
+            var phoneNumbersList=await contactsProvider.queryContactListForPhoneNumbers(fullName??"");
+            Navigator.pushNamed(context, RouteGenerator.SMS_PAGE,arguments: {"address":address,"fullName":fullName,"avatarColor":avatarColor,"phoneNumbers":phoneNumbersList});
         },
-      //key: ValueKey(displayName),
+      //key: ValueKey(address),
       leading: CircleAvatar(
         backgroundColor: avatarColors[avatarColor??0],
-        child: displayName?[0] != "*"
+        child: fullName?[0] != "*"
             ? Text(
-          "${displayName?[0]}",
+          "${fullName?[0]}",
           style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold),
@@ -83,9 +93,9 @@ class _MessagesState extends State<Messages> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-                child: Text("$displayName",maxLines: 1,)),
+                child: Text("$fullName",maxLines: 1,)),
             Expanded(
-                child: Text("${date?.hour}:${date?.minute}",maxLines: 1,textAlign: TextAlign.end)),
+                child: Text(DateFormat.MMMd().format(date!),maxLines: 1,textAlign: TextAlign.end)),
           ],
         ),
       ),
@@ -114,58 +124,5 @@ class _MessagesState extends State<Messages> {
     );
   }
 
-  void queryAndInitializeMessages() async {
-    var contactThreads = await smsQuery.getAllThreads;
-    for (var threads in contactThreads) {
-      var messagesFromContact =
-      await smsQuery.querySms(address: threads.address);
-      int numOfUnRead = 0;
-      for (var message in messagesFromContact) {
-        if (message != null && !message.isRead!) {
-          numOfUnRead += 1;
-        }
-      }
 
-      if (messagesFromContact.isNotEmpty){
-        var contactModel = await ContactDatabase()
-            .retrieveContactFromContactsTable(displayName: threads.address);
-      int avatarColor = 0;
-      if (contactModel == null) {
-        avatarColor = Random().nextInt(avatarColors.length);
-        await insertToContactDatabase(threads.address, avatarColor);
-        messagesContactList.add({
-          "name": threads.address,
-          "unRead": numOfUnRead,
-          "date": messagesFromContact.last.dateSent,
-          "lastMessage": messagesFromContact.last.body,
-          "avatarColor": avatarColor
-        });
-      }
-      else {
-        messagesContactList.add({
-          "name": threads.address,
-          "unRead": numOfUnRead,
-          "date": messagesFromContact.last.dateSent,
-          "lastMessage": messagesFromContact.last.body,
-          "avatarColor": contactModel.avatarColor
-        });
-      }
-    }
-
-
-
-
-    }
-
-    setState(() {
-
-    });
-  }
-
-  Future insertToContactDatabase(String? displayName, int avatarColor) async {
-    ContactsModel contactsModel =
-    ContactsModel(displayName: displayName, avatarColor: avatarColor);
-    await ContactDatabase()
-        .insertIntoContactsTable(contactsModel: contactsModel);
-  }
 }

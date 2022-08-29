@@ -9,6 +9,7 @@ import 'package:instant_message_me/databases/contacts_database.dart';
 import 'package:instant_message_me/models/contacts_model.dart';
 import 'package:collection/collection.dart';
 import 'package:grouped_list/grouped_list.dart';
+import 'package:instant_message_me/providers/contacts_provider.dart';
 import 'package:instant_message_me/providers/messages_contacts_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -22,44 +23,19 @@ class Contacts extends StatefulWidget {
 class _ContactsState extends State<Contacts> {
 
 
-  Future<List<Contact>> contacts =
-      ContactsService.getContacts(withThumbnails: false);
-  List< Map<dynamic,dynamic>>groupedContactList=[];//contains the list of maps:key is the first display name value is the contact element
+
+  //contains the list of maps:key is the first display name value is the contact element
   late MessagesContactsProvider messagesContactsProvider;
+  late ContactsProvider contactsProvider;
   @override
   void initState() {
-    messagesContactsProvider=Provider.of(context,listen: false);
-    ContactsService.getContacts(withThumbnails: false).then((contactResult) async{
-      contactResult.forEach((contactElement)async {
-        var contactModel=await ContactDatabase().retrieveContactFromContactsTable(displayName: contactElement.displayName);
-        int avatarColor=0;
-        if(contactModel==null) {
-          avatarColor= Random().nextInt(avatarColors.length);
-          await insertToContactDatabase(contactElement.displayName, avatarColor);
-          groupedContactList.add({"name":contactElement.displayName,"value":contactElement,"avatarcolor":avatarColor});
 
-        }
-        else{
-          groupedContactList.add({"name":contactElement.displayName,"value":contactElement,"avatarcolor":contactModel.avatarColor});
-
-
-
-        }
-         if(groupedContactList.length==contactResult.length){
-           messagesContactsProvider.numberOfContacts=groupedContactList.length;
-          setState(() {
-
-          });
-        }
-      });
-
-    }
-    );
 
   }
 
   @override
   Widget build(BuildContext context) {
+    contactsProvider=Provider.of<ContactsProvider>(context,listen: false);
 
           return Container(
             decoration:BoxDecoration(
@@ -72,6 +48,9 @@ class _ContactsState extends State<Contacts> {
               child: GroupedListView(
                   primary: false,
                   shrinkWrap: true,
+                physics: ScrollPhysics(),
+
+
                 //key: const PageStorageKey<String>("contacts"),
 
                 //arranges elements in a group in asceneding order if item1 coms b4 item2
@@ -91,7 +70,7 @@ class _ContactsState extends State<Contacts> {
 
                 groupBy: (dynamic obj)=>obj["name"].toUpperCase().substring(0,1),
 
-                elements: groupedContactList,
+                elements: contactsProvider.groupedContactList,
                 order: GroupedListOrder.ASC,
               ),
             ),
@@ -127,12 +106,7 @@ class _ContactsState extends State<Contacts> {
     );
   }
 
-  Future insertToContactDatabase(String? displayName, int avatarColor) async {
-    ContactsModel contactsModel =
-        ContactsModel(displayName: displayName, avatarColor: avatarColor);
-    await ContactDatabase()
-        .insertIntoContactsTable(contactsModel: contactsModel);
-  }
+
 
 
 }

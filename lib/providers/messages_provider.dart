@@ -45,8 +45,8 @@ class MessagesProvider extends ChangeNotifier{
             "fullName": threads.contact?.fullName??threads.address,//for display in list
             "address":threads.address,//for querying messages
             "unRead": numOfUnRead,
-            "date": messagesFromContact.last.dateSent,
-            "lastMessage": messagesFromContact.last.body,
+            "date": messagesFromContact.first.date?? messagesFromContact.first.dateSent,
+            "lastMessage": messagesFromContact.first.body,
             "avatarColor": avatarColor,
 
           });
@@ -56,7 +56,7 @@ class MessagesProvider extends ChangeNotifier{
             "fullName": threads.contact?.fullName??threads.address,//for display in list
             "address":threads.address,//for querying messages
             "unRead": numOfUnRead,
-            "date": messagesFromContact.first.dateSent,
+            "date": messagesFromContact.first.date?? messagesFromContact.first.dateSent,
             "lastMessage": messagesFromContact.first.body,
             "avatarColor": contactModel.avatarColor
           });
@@ -67,7 +67,7 @@ class MessagesProvider extends ChangeNotifier{
 
 
     }
-
+           notifyListeners();
 
   }
 

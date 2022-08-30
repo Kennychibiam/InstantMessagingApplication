@@ -36,6 +36,7 @@ class ContactsProvider extends ChangeNotifier{
         }
         if(groupedContactList.length==contactResult.length){
           numberOfContacts=groupedContactList.length;
+          notifyListeners();
         }
       });
 

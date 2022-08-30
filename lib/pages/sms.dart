@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:instant_message_me/databases/contacts_database.dart';
 import 'package:instant_message_me/pages/messages.dart';
+import 'package:instant_message_me/sender.dart';
 import 'package:intl/intl.dart';
 import 'package:sms_advanced/sms_advanced.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -39,7 +40,6 @@ class _SmsMessageState extends State<SmsMessagePage> {
   double heightOfScreen = 0.0;
   late ScrollController smsScrollController = ScrollController();
   late SimCardsProvider simCardProvider=SimCardsProvider();
-  late SmsSender sender=SmsSender();
   late TextEditingController messageController=TextEditingController();
 
 
@@ -53,9 +53,7 @@ class _SmsMessageState extends State<SmsMessagePage> {
     if (widget.phoneNumber != null && widget.phoneNumber!.isNotEmpty) {
       isPhoneNumbersEmpty = false;
     }
-    sender.onSmsDelivered.listen((event) {
-      print("delivered");
-    });
+
   }
 
   @override
@@ -255,9 +253,13 @@ class _SmsMessageState extends State<SmsMessagePage> {
     int incrIndex=index+1;
     return InkWell(
       onTap: (){
-        if(messageController.text.isNotEmpty){
-           SmsMessage message=SmsMessage(widget.fullName,messageController.text);
-           sender.sendSms(message,simCard: simCard);}
+        if(messageController.text.toString().isNotEmpty){
+          print(messageController.text.toString());
+          print(widget.fullName);
+          print(simCard.state.toString());
+           SmsMessage message=SmsMessage(widget.phoneNumber![0].value,messageController.text.toString(),dateSent: DateTime.now(),kind: SmsMessageKind.Sent,date: DateTime.now(),read: true);
+           SenderClass().sendSmS(message, simCard);
+           }
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -299,11 +301,11 @@ class _SmsMessageState extends State<SmsMessagePage> {
         message.isRead != true;
         bool canShowTime = true;
         if (messagesList.isNotEmpty &&
-            messagesList.last["date"] == message.dateSent) {
+            messagesList.last["date"] == message.date) {
           messagesList.last["canShowTime"] = false;
         }
         messagesList.add({
-          "date": message.dateSent,
+          "date": message.date??message.dateSent,
           "state": message.state, //sent, delivered, failed
           "body": message.body ?? "",
           "kind": message.kind,

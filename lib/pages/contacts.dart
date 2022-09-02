@@ -96,7 +96,7 @@ class _ContactsState extends State<Contacts> {
           color: Colors.white,
         ),
       ),
-      title: Text("$displayName"),
+      title: Text("${displayName?.substring(0,1)??""}"),
       subtitle: Column(
         children: [
           SizedBox(height: 10.0),

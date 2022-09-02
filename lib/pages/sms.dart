@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
+import 'package:instant_message_me/classes/flutter_send_sms.dart';
 import 'package:instant_message_me/databases/contacts_database.dart';
 import 'package:instant_message_me/pages/messages.dart';
 import 'package:instant_message_me/sender.dart';
@@ -257,8 +258,8 @@ class _SmsMessageState extends State<SmsMessagePage> {
           print(messageController.text.toString());
           print(widget.fullName);
           print(simCard.state.toString());
-           SmsMessage message=SmsMessage(widget.phoneNumber![0].value,messageController.text.toString(),dateSent: DateTime.now(),kind: SmsMessageKind.Sent,date: DateTime.now(),read: true);
-           SenderClass().sendSmS(message, simCard);
+            List<String>phoneNumbers=[widget.phoneNumber![0].value??""];
+            FlutterSmsClass().flutterSendSms(messageController.text.toString(),phoneNumbers);
            }
       },
       child: Padding(

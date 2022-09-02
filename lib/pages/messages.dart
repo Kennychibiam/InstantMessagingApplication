@@ -68,6 +68,7 @@ class _MessagesState extends State<Messages> {
 
 
   Widget messagesListTile(String? address,String? fullName,int?avatarColor,String?lastMessage,DateTime? date, int? unRead) {
+
     return ListTile(
         onTap: ()async{
             var phoneNumbersList=await contactsProvider.queryContactListForPhoneNumbers(fullName??"");
@@ -93,7 +94,7 @@ class _MessagesState extends State<Messages> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-                child: Text("$fullName",maxLines: 1,)),
+                child: Text("${fullName![0]}",maxLines: 1,)),
             Expanded(
                 child: Text(DateFormat.MMMd().format(date!),maxLines: 1,textAlign: TextAlign.end)),
           ],
@@ -106,7 +107,7 @@ class _MessagesState extends State<Messages> {
             children: [
               Expanded(
                   child:
-                  Text(lastMessage??"",maxLines: 2,)),
+                  Text("${lastMessage?.substring(0,1)??""}",maxLines: 2,)),
               Container(
                 margin: EdgeInsets.all(3.0),
                 child: unRead!=0?CircleAvatar(

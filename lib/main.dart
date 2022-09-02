@@ -5,6 +5,7 @@ import 'package:instant_message_me/controllers/route_generator.dart';
 import 'package:instant_message_me/providers/contacts_provider.dart';
 import 'package:instant_message_me/providers/messages_contacts_provider.dart';
 import 'package:instant_message_me/providers/messages_provider.dart';
+import 'package:instant_message_me/receiver.dart';
 import 'package:instant_message_me/sender.dart';
 import 'package:open_as_default/open_as_default.dart';
 import 'package:provider/provider.dart';
@@ -18,13 +19,6 @@ void main() async {
   if (!isAppDefault) {
     await SystemNavigator.pop(animated: true);
   }
-  MessagesContactsProvider messagesContactsProviderInstance =
-  MessagesContactsProvider();
-  ContactsProvider contactsProviderInstance =
-  ContactsProvider();
-  MessagesProvider messagesProviderInstance =
-  MessagesProvider();
-
 
   Map<Permission, PermissionStatus>statuses = await[
     Permission.contacts,
@@ -37,8 +31,15 @@ void main() async {
   });
   // var status = await Permission.contacts.request();
   if (status) {
-    await messagesProviderInstance.queryAndInitializeMessages();
-    await contactsProviderInstance.queryAndInitializeContacts();
+
+    MessagesContactsProvider messagesContactsProviderInstance =
+    MessagesContactsProvider();
+    ContactsProvider contactsProviderInstance =
+    ContactsProvider();
+    MessagesProvider messagesProviderInstance =
+    MessagesProvider();
+    messagesProviderInstance.queryAndInitializeMessages();
+    contactsProviderInstance.queryAndInitializeContacts();
 
     runApp(MultiProvider(
         providers: [
@@ -58,11 +59,13 @@ void main() async {
           initialRoute: RouteGenerator.MAIN_PAGE,
           onGenerateRoute: RouteGenerator.routes,
         )));
+
+   // ReceiverClass().receiverInitializeListenStream();
   }
 }
 
 
-Future<bool> isAppDefaultForSms() async {
+Future<bool> isAppDefaultForSms() async {//method channel for asking permission
   const String METHOD_CHANNEL_SMS_HANDLING = "com.nitelite.handling.messages";
 
   var methodChannelHandler = MethodChannel(METHOD_CHANNEL_SMS_HANDLING);
@@ -90,7 +93,7 @@ class MyApp extends StatelessWidget {
           return true;
         },
         child: Consumer<MessagesContactsProvider>(
-          builder: (context, messageProviderInstance, child) =>
+          builder: (context, contactMessageProviderInstance, child) =>
               Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -110,58 +113,69 @@ class MyApp extends StatelessWidget {
                     shrinkWrap: true,
 
                     slivers: [
-                      Consumer<ContactsProvider>(
-                        builder: (context, contactProviderInstance, child) =>
-                            SliverAppBar(
-                              elevation: 0.0,
-                              expandedHeight: 200.0,
-                              pinned: true,
-                              flexibleSpace: Container(
-                                //adds gradient colors
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      Color.fromARGB(255, 251, 196, 144),
-                                      Color.fromARGB(255, 255, 239, 213)
+                      Consumer<MessagesProvider>(
+                        builder:(context, messageProviderInstance, child)=> Consumer<ContactsProvider>(
+                          builder: (context, contactProviderInstance, child) =>
+                              SliverAppBar(
+                                elevation: 0.0,
+                                expandedHeight: 200.0,
+                                pinned: true,
+                                flexibleSpace: Container(
+                                  //adds gradient colors
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.centerLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [
+                                        Color.fromARGB(255, 251, 196, 144),
+                                        Color.fromARGB(255, 255, 239, 213)
+                                      ],
+                                    ),
+                                  ),
+
+                                  child: contactMessageProviderInstance
+                                      .currentSelectedIndex == 0
+                                      ? Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Messages",
+                                        style: TextStyle(color: Colors.black26,
+                                            fontSize: 30.0),
+                                      ),
+                                      Text(
+                                        "${messageProviderInstance
+                                            .numberOfContacts}",
+                                        style: TextStyle(color: Colors.black26,
+                                            fontSize: 18.0),
+                                      ),
+                                    ],
+                                  ),
+                                      : Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Contacts",
+                                        style: TextStyle(color: Colors.black26,
+                                            fontSize: 30.0),
+                                      ),
+                                      Text(
+                                        "${contactProviderInstance
+                                            .numberOfContacts}",
+                                        style: TextStyle(color: Colors.black26,
+                                            fontSize: 18.0),
+                                      ),
                                     ],
                                   ),
                                 ),
-
-                                child: messageProviderInstance
-                                    .currentSelectedIndex == 0
-                                    ? Center(
-                                  child: Text(
-                                    "Messages",
-                                    style: TextStyle(
-                                        color: Colors.black26, fontSize: 30.0),
-                                  ),
-                                )
-                                    : Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Contacts",
-                                      style: TextStyle(color: Colors.black26,
-                                          fontSize: 30.0),
-                                    ),
-                                    Text(
-                                      "${contactProviderInstance
-                                          .numberOfContacts}",
-                                      style: TextStyle(color: Colors.black26,
-                                          fontSize: 18.0),
-                                    ),
-                                  ],
-                                ),
                               ),
-                            ),
+                        ),
                       ),
                       SliverFillRemaining(
                         child: IndexedStack(
-                          index: messageProviderInstance.currentSelectedIndex,
+                          index: contactMessageProviderInstance.currentSelectedIndex,
                           children: [
-                            ...messageProviderInstance
+                            ...contactMessageProviderInstance
                                 .messageContactsWidgetList,
                           ],
                         ),

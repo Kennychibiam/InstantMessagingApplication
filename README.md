@@ -4,7 +4,30 @@
   <li>
   Access contact list
   </li>
-  <li>Message any contact</li>
-  <li>Add text and multimedia files</li>
-  <li>automatically save drafts</li>  
+  <li>Read messages</li>
+  <li>Send text messages</li>
+  <li>Manage message repository</li>  
 </ul>
+
+<table>
+<tr>
+<td>
+<img src="screenshots/Screenshot_20220831-024557.png" width=200 height= 200>
+
+</td>
+<td>
+<img src="screenshots/Screenshot_20220831-024615.png"  width=200 height= 200>
+
+</td>
+<td>
+<img src="screenshots/Screenshot_20220831-031223.png"  width=200 height= 200>
+
+</td>
+<td>
+<img src="screenshots/Screenshot_20220831-031236.png"   width=200 height= 200>
+
+</td>
+</tr>
+
+
+</table>

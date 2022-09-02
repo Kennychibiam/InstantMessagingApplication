@@ -12,19 +12,19 @@
 <table>
 <tr>
 <td>
-<img src="screenshots/Screenshot_20220831-024557.png" width=200 height= 200>
+<img src="screenshots/Screenshot_20220831-024557.jpg" width=200 height= 200>
 
 </td>
 <td>
-<img src="screenshots/Screenshot_20220831-024615.png"  width=200 height= 200>
+<img src="screenshots/Screenshot_20220831-024615.jpg"  width=200 height= 200>
 
 </td>
 <td>
-<img src="screenshots/Screenshot_20220831-031223.png"  width=200 height= 200>
+<img src="screenshots/Screenshot_20220831-031223.jpg"  width=200 height= 200>
 
 </td>
 <td>
-<img src="screenshots/Screenshot_20220831-031236.png"   width=200 height= 200>
+<img src="screenshots/Screenshot_20220831-031236.jpg"   width=200 height= 200>
 
 </td>
 </tr>
